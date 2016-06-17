@@ -58,22 +58,27 @@ namespace CryptoExercises
 
         public string SingleByteXORCipher(string hex)
         {
+            var ca = new CharacterAnalysis();
             var bytes = ConvertHexStringToByteArray(hex);
+
             var scores = new Dictionary<char, float>();
             var xorStrings = new Dictionary<char, string>();
 
             for(var i = 0; i < CharacterAnalysis.Letters.Count(); i++)
             {
                 var xorString = new char[bytes.Length];
-                var letterAsByte = Convert.ToByte(CharacterAnalysis.Letters[i]);
+                //var letterAsByte = Convert.ToByte(CharacterAnalysis.Letters[i]);
+                var letterAsByte = Encoding.UTF8.GetBytes(CharacterAnalysis.Letters[i].ToString());
                 for(var j = 0; j < bytes.Length; j++)
                 {
-                    var xorChar = Convert.ToChar(j ^ letterAsByte);
-                    Console.Write(xorChar);
+                    //var xorChar = Convert.ToChar(bytes[j] ^ letterAsByte);
+                    var tempChar = bytes[j] ^ letterAsByte[0];
+                    var xorChar = Convert.ToChar(tempChar);
                     xorString[j] = xorChar;
                 }
-
-                xorStrings.Add(CharacterAnalysis.Letters[i], xorString.ToString());
+                var stringToAdd = new string(xorString);
+                Console.Write(stringToAdd);
+                xorStrings.Add(CharacterAnalysis.Letters[i], stringToAdd);
 
                 Console.Write("\t");
 
@@ -81,8 +86,9 @@ namespace CryptoExercises
                 
                 for (var j = 0; j < xorString.Length; j++)
                 {
-                    var standardFreq = CharacterAnalysis.CharacterFrequencyMap[xorString[j]];
-                    var currFreq = Math.Round(((float)xorString.Length / (float)bytes.Length) * 100, 1);
+                    float freq;
+                    var standardFreq = CharacterAnalysis.CharacterFrequencyMap.TryGetValue(xorString[j], out freq) ? freq : -100;
+                    var currFreq = Math.Round(((float)xorString.Count(c => c == xorString[j]) / (float)bytes.Length) * 100, 1);
                     score += Math.Abs(standardFreq - currFreq);
                 }
 
@@ -100,10 +106,11 @@ namespace CryptoExercises
                 if (currWinner == default(char))
                     currWinner = s.Key;
                 else
-                    currWinner = scores[currWinner] < s.Value ? s.Key : currWinner;
+                    currWinner = scores[currWinner] > s.Value ? s.Key : currWinner;
             }
 
-            Console.WriteLine($"The winning score was for the letter {currWinner}!\nHere is the winning string: {xorStrings[currWinner]}\n");
+            var winningString = xorStrings[currWinner];
+            Console.WriteLine(string.Format("The winning score was for the letter {0}!Here is the winning string: {1}", currWinner, winningString));
             return xorStrings[currWinner];
         }
         

@@ -8,8 +8,8 @@ namespace CryptoExercises
 {
     class CharacterAnalysis
     {
-        public Dictionary<char, float> CharacterFrequencyMap;
-        public List<char> Letters;
+        public static Dictionary<char, float> CharacterFrequencyMap;
+        public static List<char> Letters;
 
         public CharacterAnalysis()
         {
@@ -41,35 +41,63 @@ namespace CryptoExercises
                 {'X', 0.2F },
                 {'Y', 2.0F },
                 {'Z', 0.1F },
+                {'a', 8.2F },
+                {'b', 1.5F },
+                {'c', 2.8F },
+                {'d', 4.3F },
+                {'e', 12.7F },
+                {'f', 2.2F },
+                {'g', 2.0F },
+                {'h', 6.1F },
+                {'i', 7.0F },
+                {'j', 0.2F },
+                {'k', 0.8F },
+                {'l', 4.0F },
+                {'m', 2.4F },
+                {'n', 6.7F },
+                {'o', 7.5F },
+                {'p', 1.9F },
+                {'q', 0.1F },
+                {'r', 6.0F },
+                {'s', 6.3F },
+                {'t', 9.1F },
+                {'u', 2.8F },
+                {'v', 1.0F },
+                {'w', 2.4F },
+                {'x', 0.2F },
+                {'y', 2.0F },
+                {'z', 0.1F }
             };
 
-            Letters = new List<char>();
-            Letters.Add('a');
-            Letters.Add('b');
-            Letters.Add('c');
-            Letters.Add('d');
-            Letters.Add('e');
-            Letters.Add('f');
-            Letters.Add('g');
-            Letters.Add('h');
-            Letters.Add('i');
-            Letters.Add('j');
-            Letters.Add('k');
-            Letters.Add('l');
-            Letters.Add('m');
-            Letters.Add('n');
-            Letters.Add('o');
-            Letters.Add('p');
-            Letters.Add('q');
-            Letters.Add('r');
-            Letters.Add('s');
-            Letters.Add('t');
-            Letters.Add('u');
-            Letters.Add('v');
-            Letters.Add('w');
-            Letters.Add('x');
-            Letters.Add('y');
-            Letters.Add('z');
+            Letters = new List<char>()
+            {
+                'A',
+                'B',
+                'C',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'O',
+                'P',
+                'Q',
+                'R',
+                'S',
+                'T',
+                'U',
+                'V',
+                'W',
+                'X',
+                'Y',
+                'Z'
+            };
 
         }
         
