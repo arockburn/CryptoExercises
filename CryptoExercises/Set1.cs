@@ -60,18 +60,15 @@ namespace CryptoExercises
         {
             var ca = new CharacterAnalysis();
             var bytes = ConvertHexStringToByteArray(hex);
-
             var scores = new Dictionary<char, float>();
             var xorStrings = new Dictionary<char, string>();
 
             for(var i = 0; i < CharacterAnalysis.Letters.Count(); i++)
             {
                 var xorString = new char[bytes.Length];
-                //var letterAsByte = Convert.ToByte(CharacterAnalysis.Letters[i]);
                 var letterAsByte = Encoding.UTF8.GetBytes(CharacterAnalysis.Letters[i].ToString());
                 for(var j = 0; j < bytes.Length; j++)
                 {
-                    //var xorChar = Convert.ToChar(bytes[j] ^ letterAsByte);
                     var tempChar = bytes[j] ^ letterAsByte[0];
                     var xorChar = Convert.ToChar(tempChar);
                     xorString[j] = xorChar;
@@ -113,6 +110,9 @@ namespace CryptoExercises
             Console.WriteLine(string.Format("The winning score was for the letter {0}!Here is the winning string: {1}", currWinner, winningString));
             return xorStrings[currWinner];
         }
+
+
+
         
     }
 }
