@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace CryptoExercises
 {
@@ -20,7 +21,11 @@ namespace CryptoExercises
             //Console.WriteLine(xorResult);
 
             //Ex 3
-            var result = set1.SingleByteXORCipher("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
+            //var result = set1.SingleByteXORCipher("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
+
+            //Ex 4
+            var path = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\ProblemFiles\\4.txt";
+            var result = set1.FindEncryptedLineInFile(path);
         }
     }
 }
