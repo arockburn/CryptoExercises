@@ -59,68 +59,55 @@ namespace CryptoExercises
 
         public string SingleByteXORCipher(string hex)
         {
-            var ca = new CharacterAnalysis();
-            var bytes = ConvertHexStringToByteArray(hex);
-            var scores = new Dictionary<char, float>();
-            var xorStrings = new Dictionary<char, string>();
+            var outputDumpFilePath = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\ProblemFiles\\4dump.txt";
 
-            for(var i = 0; i < CharacterAnalysis.Letters.Count(); i++)
+            if (!File.Exists(outputDumpFilePath))
+                File.Create(outputDumpFilePath);
+
+            using (var writer = File.AppendText(outputDumpFilePath))
             {
-                var xorString = new char[bytes.Length];
-                var letterAsByte = Encoding.UTF8.GetBytes(CharacterAnalysis.Letters.Keys.ToList()[i].ToString());
-                for(var j = 0; j < bytes.Length; j++)
+
+                var ca = new CharacterAnalysis();
+                var bytes = ConvertHexStringToByteArray(hex);
+                var scores = new Dictionary<char, float>();
+                var xorStrings = new Dictionary<char, string>();
+
+                for (var i = 0; i < CharacterAnalysis.Letters.Count(); i++)
                 {
-                    var tempChar = bytes[j] ^ letterAsByte[0];
-                    var xorChar = Convert.ToChar(tempChar);
-                    xorString[j] = xorChar;
+                    var xorString = new char[bytes.Length];
+                    var letterAsByte = Encoding.UTF8.GetBytes(CharacterAnalysis.Letters.Keys.ToList()[i].ToString());
+                    for (var j = 0; j < bytes.Length; j++)
+                    {
+                        var tempChar = bytes[j] ^ letterAsByte[0];
+                        var xorChar = Convert.ToChar(tempChar);
+                        xorString[j] = xorChar;
+                    }
+                    var stringToAdd = new string(xorString);
+                    Console.Write(stringToAdd);
+                    xorStrings.Add(CharacterAnalysis.Letters.Keys.ToList()[i], stringToAdd);
+
+                    var score = GetScoreForDecryptedString(new string(xorString));
+                    Console.Write(score);
+                    scores.Add(CharacterAnalysis.Letters.Keys.ToList()[i], (float)score);
+                    
+                    Console.Write("\n");
+
+                    writer.WriteLine(stringToAdd + '\t' + score + "\n Total Chars in string: " + stringToAdd.Count(char.IsLetter));
                 }
-                var stringToAdd = new string(xorString);
-                //Console.Write(stringToAdd);
-                xorStrings.Add(CharacterAnalysis.Letters.Keys.ToList()[i], stringToAdd);
 
-                //Console.Write("\t");
+                char currWinner = default(char);
+                foreach (var s in scores)
+                {
+                    if (currWinner == default(char))
+                        currWinner = s.Key;
+                    else
+                        currWinner = scores[currWinner] < s.Value ? s.Key : currWinner;
+                }
 
-                //var score = 0.0;
-
-                //for (var j = 0; j < xorString.Length; j++)
-                //{
-                //    char temp;
-                //    //if (CharacterAnalysis.Letters.Contains(xorString[j]))
-                //    if (CharacterAnalysis.Letters.TryGetValue(xorString[j], out temp) || CharacterAnalysis.Letters.Values.Contains(xorString[j]))
-                //    {
-                //        //float standardFreq;
-                //        //CharacterAnalysis.CharacterFrequencyMap.TryGetValue(xorString[j], out standardFreq);
-                //        //var currFreq = Math.Round(((float)xorString.Count(c => c == xorString[j]) / (float)bytes.Length) * 100, 1);
-                //        //score += Math.Abs(standardFreq - currFreq);
-                //        score += 2;
-                //    }
-                //    else if (CharacterAnalysis.SpecialChars.Contains(xorString[j]))
-                //    {
-                //        score += 1;
-                //    }
-                //}
-
-                var score = GetScoreForDecryptedString(new string(xorString));
-                //Console.Write(score);
-                scores.Add(CharacterAnalysis.Letters.Keys.ToList()[i], (float)score);
-                
-                
-                //Console.Write("\n");
-
+                var winningString = xorStrings[currWinner];
+                Console.WriteLine(string.Format("The winning score was for the letter {0} with a score of {2}!\nHere is the winning string: {1}", currWinner, winningString, scores[currWinner]));
+                return xorStrings[currWinner];
             }
-
-            char currWinner = default(char);
-            foreach(var s in scores)
-            {
-                if (currWinner == default(char))
-                    currWinner = s.Key;
-                else
-                    currWinner = scores[currWinner] < s.Value ? s.Key : currWinner;
-            }
-
-            var winningString = xorStrings[currWinner];
-            Console.WriteLine(string.Format("The winning score was for the letter {0} with a score of {2}!\nHere is the winning string: {1}", currWinner, winningString, scores[currWinner]));
-            return xorStrings[currWinner];
         }
 
 
@@ -134,10 +121,9 @@ namespace CryptoExercises
                 while((line = reader.ReadLine()) != null)
                 {
                     lines.Add(line);
-                    //Console.WriteLine(line);
                 }
             }
-
+            
             var winner = "";
             var bestScore = 0.0;
             var winners = new List<string>();
