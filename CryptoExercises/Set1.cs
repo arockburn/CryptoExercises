@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
+using CryptoExercises.Models;
 
 namespace CryptoExercises
 {
     public class Set1
     {
         public const string Ex1StartString = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
+        public readonly string OutputFileDump = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\ProblemFiles\\4dump.txt";
 
         public string ConvertHexStringToBase64(string hexString)
         {
@@ -59,12 +62,7 @@ namespace CryptoExercises
 
         public string SingleByteXORCipher(string hex)
         {
-            var outputDumpFilePath = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\ProblemFiles\\4dump.txt";
-
-            if (!File.Exists(outputDumpFilePath))
-                File.Create(outputDumpFilePath);
-
-            using (var writer = File.AppendText(outputDumpFilePath))
+            using (var writer = File.AppendText(OutputFileDump))
             {
 
                 var ca = new CharacterAnalysis();
@@ -92,7 +90,14 @@ namespace CryptoExercises
                     
                     Console.Write("\n");
 
-                    writer.WriteLine(stringToAdd + '\t' + score + "\n Total Chars in string: " + stringToAdd.Count(char.IsLetter));
+                    var ser = JsonConvert.SerializeObject(new StringScoreCharCount
+                    {
+                        CharAry = xorString,
+                        Score = Convert.ToInt32(score),
+                        CharCount = stringToAdd.Count(char.IsLetter)
+                    });
+                    
+                    writer.WriteLine(ser);
                 }
 
                 char currWinner = default(char);
@@ -114,6 +119,11 @@ namespace CryptoExercises
 
         public string FindEncryptedLineInFile(string path)
         {
+            if (!File.Exists(OutputFileDump))
+                File.Create(OutputFileDump);
+            else
+                File.WriteAllText(OutputFileDump, string.Empty);
+
             var lines = new List<string>();
             using (var reader = new StreamReader(path))
             {
@@ -138,6 +148,16 @@ namespace CryptoExercises
                     bestScore = score;
                 }
                 Console.WriteLine(string.Format("{0}\n\t\t\t\tVS.\n{1}\n{1} wins with score of: {2}", winner, temp, bestScore));
+            }
+
+            var scoresDict = SortDecryptedStringsByScore();
+            var scores = scoresDict.Keys;
+            var maxScore = scores.Max();
+            var maxScoreList = scoresDict[maxScore];
+            var maxScoreStrings = new List<string>();
+            foreach(var charary in maxScoreList)
+            {
+                maxScoreStrings.Add(new string(charary));
             }
 
             Console.WriteLine($"The winning string is: {winner}");
@@ -166,6 +186,27 @@ namespace CryptoExercises
             }
 
             return score;
+        }
+
+        public Dictionary<int, List<char[]>> SortDecryptedStringsByScore()
+        {
+            var scoresAndStrings = new Dictionary<int, List<char[]>>();
+            
+            using (var reader = File.OpenText(OutputFileDump))
+            {
+                var line = "";
+                while((line = reader.ReadLine()) != null)
+                {
+                    StringScoreCharCount obj = JsonConvert.DeserializeObject<StringScoreCharCount>(line);
+
+                    if (scoresAndStrings.ContainsKey(obj.Score))
+                        scoresAndStrings[obj.Score].Add(obj.CharAry);
+                    else
+                        scoresAndStrings.Add(obj.Score, new List<char[]> { obj.CharAry});
+                }
+            }
+            
+            return scoresAndStrings;
         }
     }
 }
